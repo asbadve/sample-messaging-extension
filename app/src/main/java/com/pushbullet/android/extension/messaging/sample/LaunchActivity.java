@@ -23,7 +23,10 @@ import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import com.pushbullet.android.extension.MessagingExtension;
+import de.greenrobot.event.EventBus;
 
 import java.util.*;
 
@@ -35,6 +38,8 @@ public class LaunchActivity extends Activity {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        this.setContentView(R.layout.main);
 
         // Simulate the arrival of a couple of text messages
 
@@ -56,6 +61,20 @@ public class LaunchActivity extends Activity {
             MessagingExtension.mirrorMessage(this, conversationIden, message.sender, message.message,
                                              BitmapFactory.decodeResource(this.getResources(), android.R.drawable.ic_dialog_alert), null, 0);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        EventBus.getDefault().unregister(this);
     }
 
     public static void updateNotification(final Context context, final Collection<TextMessage> messages) {
@@ -95,5 +114,14 @@ public class LaunchActivity extends Activity {
         public String toString() {
             return this.sender;
         }
+    }
+
+    public void onEventMainThread(final SampleMessagingExtension.ReplyEvent e) {
+        final ViewGroup root = (ViewGroup) this.findViewById(R.id.root);
+
+        final TextView textView = new TextView(root.getContext());
+        textView.setText(e.conversationIden + ": " + e.message);
+
+        root.addView(textView);
     }
 }

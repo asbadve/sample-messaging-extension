@@ -17,5 +17,6 @@ android {
 }
 
 dependencies {
-    compile 'com.pushbullet:android-extensions:1.0.4@aar'
+    compile 'com.pushbullet:android-extensions:+@aar'
+    compile 'de.greenrobot:eventbus:2.4.0'
 }

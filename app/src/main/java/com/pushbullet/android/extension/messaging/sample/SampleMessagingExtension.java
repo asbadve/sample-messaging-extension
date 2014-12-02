@@ -18,6 +18,7 @@ package com.pushbullet.android.extension.messaging.sample;
 
 import android.util.Log;
 import com.pushbullet.android.extension.MessagingExtension;
+import de.greenrobot.event.EventBus;
 
 public class SampleMessagingExtension extends MessagingExtension {
     private static final String TAG = "SampleMessagingExtension";
@@ -25,6 +26,8 @@ public class SampleMessagingExtension extends MessagingExtension {
     @Override
     protected void onMessageReceived(final String conversationIden, final String message) {
         Log.i(TAG, "Pushbullet MessagingExtension: onMessageReceived(" + conversationIden + ", " + message + ")");
+
+        EventBus.getDefault().post(new ReplyEvent(conversationIden, message));
     }
 
     @Override
@@ -34,5 +37,14 @@ public class SampleMessagingExtension extends MessagingExtension {
         LaunchActivity.sMessages.remove(conversationIden);
 
         LaunchActivity.updateNotification(this, LaunchActivity.sMessages.values());
+    }
+
+    public static class ReplyEvent {
+        public final String conversationIden, message;
+
+        public ReplyEvent(final String conversationIden, final String message) {
+            this.conversationIden = conversationIden;
+            this.message = message;
+        }
     }
 }
